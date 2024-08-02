@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Button Redirect</title>
+</head>
+<body>
+
+    <h1>Test Button Redirect</h1>
+    <button>Button 1</button>
+    <button>Button 2</button>
+    <button>Button 3</button>
+
+    <script>
+    var targetLink = "https://shope.ee/9UeaJsvw7m";
+    var clickAllowed = true; // Biến để kiểm soát việc cho phép click sau 10 giây
+
+    function isNewDay(lastTime) {
+        var lastDate = new Date(lastTime);
+        var currentDate = new Date();
+
+        return lastDate.getDate() !== currentDate.getDate() ||
+               lastDate.getMonth() !== currentDate.getMonth() ||
+               lastDate.getFullYear() !== currentDate.getFullYear();
+    }
+
+    function redirectToLink(event) {
+        if (!clickAllowed) return; // Nếu chưa cho phép click, không làm gì cả
+
+        var lastClickedTime = localStorage.getItem("lastClickedTime");
+
+        if (!lastClickedTime || isNewDay(lastClickedTime)) {
+            // Nếu chưa có thời gian bấm trong localStorage, hoặc đã qua ngày mới
+            window.location.href = targetLink;
+            localStorage.setItem("lastClickedTime", new Date().toISOString());
+        }
+    }
+
+    // Lắng nghe sự kiện click trên tất cả các button
+    var buttons = document.querySelectorAll("button");
+    buttons.forEach(function(button) {
+        button.addEventListener("click", redirectToLink);
+    });
+
+    function checkIfNewDay() {
+        var lastAccessTime = localStorage.getItem("lastAccessTime");
+        if (!lastAccessTime || isNewDay(lastAccessTime)) {
+            // Nếu chưa có thời gian truy cập trước đó, hoặc đã qua ngày mới, reset biến clickAllowed
+            localStorage.setItem("lastAccessTime", new Date().toISOString());
+            clickAllowed = false; // Đặt lại biến clickAllowed
+            setTimeout(function() {
+                clickAllowed = true; // Sau 10 giây, cho phép click
+            }, 10000); // 10000ms = 10 giây
+        }
+    }
+
+    checkIfNewDay();
+
+    function logTime() {
+        var currentTime = new Date();
+        console.log("Thời gian truy cập cuối cùng:", currentTime.toISOString());
+    }
+
+    logTime();
+
+    </script>
+
+</body>
+</html>
